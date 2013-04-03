@@ -122,9 +122,6 @@ ICECAdapter * Cec::CecInit(const char * name, CecCallback * callback) {
 	// Disable combo keys for making STOP work
 	config.comboKey                     = CEC_USER_CONTROL_CODE_UNKNOWN; 
 
-	// Disable combo keys for making STOP work
-	config.comboKey                     = CEC_USER_CONTROL_CODE_UNKNOWN;
-
 	// LibCecInitialise is noisy, so we redirect cout to nowhere
 	RedirectStreamBuffer redirect(cout, 0);
 	return (ICECAdapter *)LibCecInitialise(&config);
