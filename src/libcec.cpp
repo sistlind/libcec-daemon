@@ -118,6 +118,9 @@ ICECAdapter * Cec::CecInit(const char * name, CecCallback * callback) {
 	callbacks.CBCecConfigurationChanged = &::cecConfigurationChanged;
 	config.callbackParam                = callback;
 	config.callbacks                    = &callbacks;
+	
+	// Disable combo keys for making STOP work
+	config.comboKey                     = CEC_USER_CONTROL_CODE_UNKNOWN; 
 
 	// LibCecInitialise is noisy, so we redirect cout to nowhere
 	RedirectStreamBuffer redirect(cout, 0);
