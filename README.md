@@ -62,7 +62,7 @@ Allowed options:
   --onstandby <path>        command to run on standby
   --onactivate <path>       command to run on activation
   --ondeactivate <path>     command to run on deactivation
-  -p [ --port ] [a[.b.c.d]> HDMI port A or address A.B.C.D (overrides 
+  -p [ --port ] <a[.b.c.d]> HDMI port A or address A.B.C.D (overrides 
                             autodetected value)
   --usb <path>              USB adapter path (as shown by --list)
 

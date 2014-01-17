@@ -601,7 +601,7 @@ int main (int argc, char *argv[]) {
 	    ("onstandby", value<string>()->value_name("<path>"),  "command to run on standby")
 	    ("onactivate", value<string>()->value_name("<path>"),  "command to run on activation")
 	    ("ondeactivate", value<string>()->value_name("<path>"),  "command to run on deactivation")
-	    ("port,p", value<HDMI::address>()->value_name("[a[.b.c.d]>"),  "HDMI port A or address A.B.C.D (overrides autodetected value)")
+	    ("port,p", value<HDMI::address>()->value_name("<a[.b.c.d]>"),  "HDMI port A or address A.B.C.D (overrides autodetected value)")
 	    ("usb", value<string>()->value_name("<path>"), "USB adapter path (as shown by --list)")
 	;
 
