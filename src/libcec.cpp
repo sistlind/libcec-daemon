@@ -141,9 +141,10 @@ Cec::Cec(const char * name, CecCallback * callback)
 	config.clientVersion = CEC_CLIENT_VERSION_CURRENT;
 
 	strncpy(config.strDeviceName, name, sizeof(config.strDeviceName));
-	config.deviceTypes.Add(CEC_DEVICE_TYPE_RECORDING_DEVICE);
+	config.deviceTypes.Add(CEC_DEVICE_TYPE_RECORDING_DEVICE); 
+	// Added as more keys get mapped
 	config.deviceTypes.Add(CEC_DEVICE_TYPE_TUNER);
-	config.deviceTypes.Add(CEC_DEVICE_TYPE_PLAYBACK_DEVICE)
+	config.deviceTypes.Add(CEC_DEVICE_TYPE_PLAYBACK_DEVICE);
 	config.deviceTypes.Add(CEC_DEVICE_TYPE_AUDIO_SYSTEM);
 
 	config.bAutodetectAddress = CEC_DEFAULT_SETTING_AUTODETECT_ADDRESS;
@@ -158,6 +159,10 @@ Cec::Cec(const char * name, CecCallback * callback)
 	config.bPowerOffOnStandby = 0;
 	config.bShutdownOnStandby = 0;
 	config.iDoubleTapTimeoutMs = 0;
+	// since 2.2.0
+	#if LIBCEC_VERSION_CURRENT >= 0x2200
+	config.iDoubleTapTimeout50Ms = 0;
+	#endif
 
 	callbacks.CBCecLogMessage           = &::cecLogMessage;
 	callbacks.CBCecKeyPress             = &::cecKeyPress;
@@ -168,23 +173,6 @@ Cec::Cec(const char * name, CecCallback * callback)
 	callbacks.CBCecSourceActivated      = &::cecSourceActivated;
 	config.callbackParam                = callback;
 	config.callbacks                    = &callbacks;
-	
-	// Disable combo keys for making STOP work
-	config.comboKey                     = CEC_USER_CONTROL_CODE_UNKNOWN; 
-        config.iComboKeyTimeoutMs = 1;
-
-	// LibCecInitialise is noisy, so we redirect cout to nowhere
-	RedirectStreamBuffer redirect(cout, 0);
-	return g_cec = (ICECAdapter *)LibCecInitialise(&config);
-}
-
-Cec::Cec(const char * name, CecCallback * callback) :
-	cec(CecInit(name, callback), ICECAdapterDeleter())
-{
-	if (cec == NULL) {
-		throw std::runtime_error("Failed to initialise libCEC");
-	}
-	cec->InitVideoStandalone();
 }
 
 Cec::~Cec() {}
