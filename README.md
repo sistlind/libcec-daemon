@@ -35,6 +35,12 @@ sudo bash install-libcec.sh
 * If you have trouble getting libcec, please refer to their documentaiton.
 * Now build the libcec-daemon
 
+*  raspbrain wheezy pacakges for libcec2 from xbmc build
+        sudo echo "deb http://archive.mene.za.net/raspbian wheezy contrib" > /etc/apt/sources.list.d/mene.list
+        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key 5243CDED
+        sudo apt-get update
+        sudo apt-get install libcec-dev
+
 ```
 cd libcec-daemon
 ./bootstrap && ./configure && make
