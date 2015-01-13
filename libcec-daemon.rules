@@ -1,0 +1,3 @@
+# udev added named link for cec daemon for ease of setting up other applications
+KERNEL=="event*", ATTRS{name}=="libcec-daemon", SYMLINK="input/by-id/libcec-daemon"
+
