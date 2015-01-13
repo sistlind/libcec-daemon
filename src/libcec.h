@@ -57,7 +57,7 @@ class Cec {
 		/**
 		 * Opens the first adapter it finds
 		 */
-		void open(const std::string &adapter = "");
+		CEC::cec_logical_address open(const std::string &adapter = "");
 
 		/**
 		 * Closes the open adapter

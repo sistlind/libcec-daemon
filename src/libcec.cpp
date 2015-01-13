@@ -142,10 +142,6 @@ Cec::Cec(const char * name, CecCallback * callback)
 
 	strncpy(config.strDeviceName, name, sizeof(config.strDeviceName));
 	config.deviceTypes.Add(CEC_DEVICE_TYPE_RECORDING_DEVICE); 
-	// Added as more keys get mapped
-	config.deviceTypes.Add(CEC_DEVICE_TYPE_TUNER);
-	config.deviceTypes.Add(CEC_DEVICE_TYPE_PLAYBACK_DEVICE);
-	config.deviceTypes.Add(CEC_DEVICE_TYPE_AUDIO_SYSTEM);
 
 	config.bAutodetectAddress = CEC_DEFAULT_SETTING_AUTODETECT_ADDRESS;
 	config.iPhysicalAddress = CEC_INVALID_PHYSICAL_ADDRESS;
@@ -192,7 +188,7 @@ void Cec::init()
     }
 }
 
-void Cec::open(const std::string &name) {
+CEC::cec_logical_address Cec::open(const std::string &name) {
 	LOG4CPLUS_TRACE_STR(logger, "Cec::open()");
 	int id = 0;
 
@@ -234,6 +230,8 @@ void Cec::open(const std::string &name) {
 	}
 
 	LOG4CPLUS_INFO(logger, "Opened " << devices[id].path);
+	/* return logical address as negociated by libcec */
+	return (cec->GetLogicalAddresses()).primary;
 }
 
 void Cec::close(bool makeInactive) {

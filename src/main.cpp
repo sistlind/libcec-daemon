@@ -93,9 +93,11 @@ void Main::loop(const string & device) {
 
 	do
 	{
-		cec.open(device);
-
-		running = true;
+		/* Get logicalAddress after openning device */
+		logicalAddress = cec.open(device);
+		LOG4CPLUS_INFO(logger, "Address \"" << logicalAddress << "\"");
+		if ( logicalAddress != CECDEVICE_UNKNOWN)
+		    running = true;
 
 		/* install signals */
 		sigaction (SIGHUP,  &action, NULL);
@@ -126,7 +128,7 @@ void Main::loop(const string & device) {
 						}
 						else
 						{
-							onCecKeyPress( CEC_USER_CONTROL_CODE_POWER );
+							onCecKeyPress( CEC_USER_CONTROL_CODE_POWER_OFF_FUNCTION );
 						}
 						break;
 					case COMMAND_ACTIVE:
@@ -313,9 +315,9 @@ const std::vector<list<__u16>> & Main::setupUinputMap() {
 		uinputCecMap[CEC_USER_CONTROL_CODE_SELECT_MEDIA_FUNCTION       ] = { KEY_MEDIA };
 		uinputCecMap[CEC_USER_CONTROL_CODE_SELECT_AV_INPUT_FUNCTION    ] = { };
 		uinputCecMap[CEC_USER_CONTROL_CODE_SELECT_AUDIO_INPUT_FUNCTION ] = { };
-		uinputCecMap[CEC_USER_CONTROL_CODE_POWER_TOGGLE_FUNCTION       ] = { };
-		uinputCecMap[CEC_USER_CONTROL_CODE_POWER_OFF_FUNCTION          ] = { };
-		uinputCecMap[CEC_USER_CONTROL_CODE_POWER_ON_FUNCTION           ] = { };
+		uinputCecMap[CEC_USER_CONTROL_CODE_POWER_TOGGLE_FUNCTION       ] = { KEY_POWER };
+		uinputCecMap[CEC_USER_CONTROL_CODE_POWER_OFF_FUNCTION          ] = { KEY_POWER2 };
+		uinputCecMap[CEC_USER_CONTROL_CODE_POWER_ON_FUNCTION           ] = { KEY_WAKEUP };
 		uinputCecMap[CEC_USER_CONTROL_CODE_F1_BLUE                     ] = { KEY_BLUE };
 		uinputCecMap[CEC_USER_CONTROL_CODE_F2_RED                      ] = { KEY_RED };
 		uinputCecMap[CEC_USER_CONTROL_CODE_F3_GREEN                    ] = { KEY_GREEN };
