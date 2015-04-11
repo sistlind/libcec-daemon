@@ -77,9 +77,9 @@ void UInput::setup(const char *dev_name, const std::vector< std::list<__u16> > &
 
 	strncpy(uidev.name, dev_name, UINPUT_MAX_NAME_SIZE);
 	uidev.id.bustype = BUS_USB;
-	uidev.id.vendor  = 1;
-	uidev.id.product = 1;
-	uidev.id.version = 1;
+	uidev.id.vendor  = 1337;
+	uidev.id.product = 1337;
+	uidev.id.version = 1337;
 
 	ret = write(this->fd, &uidev, sizeof(uidev));
 	if (ret != sizeof(uidev)) {
