@@ -13,7 +13,8 @@ if which dpkg >/dev/null 2>&1; then
    check_pkg libboost-program-options-dev 1.55
    check_pkg libboost-system-dev 1.55
    check_pkg liblog4cplus-dev 1.0.4
+   check_pkg checkinstall 1.6.2
 fi
 
-aclocal -I m4
-autoreconf -ivf
+#aclocal -I m4
+#autoreconf -ivf
