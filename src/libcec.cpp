@@ -34,6 +34,7 @@ using std::endl;
 using std::map;
 using std::ostream;
 using std::string;
+using std::hex;
 
 // cecloader has to be after some #includes and using namespaces :(
 using std::cout;
@@ -138,23 +139,8 @@ Cec::Cec(const char * name, CecCallback * callback)
 
 	config.Clear();
 
-	config.clientVersion = LIBCEC_VERSION_CURRENT;
-
 	strncpy(config.strDeviceName, name, sizeof(config.strDeviceName));
 	config.deviceTypes.Add(CEC_DEVICE_TYPE_RECORDING_DEVICE);
-
-	config.bAutodetectAddress = CEC_DEFAULT_SETTING_AUTODETECT_ADDRESS;
-	config.iPhysicalAddress = CEC_INVALID_PHYSICAL_ADDRESS;
-	config.baseDevice = CECDEVICE_UNKNOWN;
-	config.iHDMIPort = CEC_HDMI_PORTNUMBER_NONE;
-	config.bUseTVMenuLanguage = 0;
-	config.bActivateSource = 0;
-	config.bPowerOffScreensaver = 0;
-	config.bPowerOnScreensaver = 0;
-	config.bSendInactiveSource = 0;
-	config.bPowerOffOnStandby = 0;
-	config.bShutdownOnStandby = 0;
-	config.iDoubleTapTimeout50Ms = 0;
 
 	callbacks.CBCecLogMessage           = &::cecLogMessage;
 	callbacks.CBCecKeyPress             = &::cecKeyPress;
@@ -163,6 +149,7 @@ Cec::Cec(const char * name, CecCallback * callback)
 	callbacks.CBCecAlert                = &::cecAlert;
 	callbacks.CBCecMenuStateChanged     = &::cecMenuStateChanged;
 	callbacks.CBCecSourceActivated      = &::cecSourceActivated;
+
 	config.callbackParam                = callback;
 	config.callbacks                    = &callbacks;
 }
@@ -171,7 +158,7 @@ Cec::~Cec() {}
 
 void Cec::init()
 {
-    if (! cec)
+    if (!cec)
     {
         // LibCecInitialise is noisy, so we redirect cout to nowhere
         RedirectStreamBuffer redirect(cout, 0);
@@ -219,7 +206,7 @@ CEC::cec_logical_address Cec::open(const std::string &name) {
 	}
 
 	// Just use the first found
-	LOG4CPLUS_INFO(logger, "Openning " << devices[id].path);
+	LOG4CPLUS_INFO(logger, "Opening " << devices[id].path);
 
 	if (!cec->Open(devices[id].comm)) {
 		throw std::runtime_error("Failed to open adapter");
@@ -299,7 +286,7 @@ ostream & Cec::listDevices(ostream & out) {
 				cec_vendor_id vendor = (cec_vendor_id) cec->GetDeviceVendorId(logical_addres);
 
 				out << "\t"  << cec->ToString(logical_addres)
-				    << "@"  << physical_address
+				    << " @ 0x" << hex << physical_address
 				    << " "   << name.name << " (" << cec->ToString(vendor) << ")"
 				    << endl;
 			}
@@ -433,15 +420,6 @@ std::ostream& operator<<(std::ostream &out, const cec_keypress & key) {
 }
 
 std::ostream& operator<<(std::ostream &out, const cec_command & cmd) {
-//  cec_logical_address initiator;        /**< the logical address of the initiator of this message */
-//  cec_logical_address destination;      /**< the logical address of the destination of this message */
-//  int8_t              ack;              /**< 1 when the ACK bit is set, 0 otherwise */
-//  int8_t              eom;              /**< 1 when the EOM bit is set, 0 otherwise */
-//  cec_opcode          opcode;           /**< the opcode of this message */
-//  cec_datapacket      parameters;       /**< the parameters attached to this message */
-//  int8_t              opcode_set;       /**< 1 when an opcode is set, 0 otherwise (POLL message) */
-//  int32_t             transmit_timeout; /**< the timeout to use in ms */
-
 	return out << "Command "
 			<< cmd.initiator << "->" << cmd.destination
 			<< "[" << (cmd.ack ? "A" : " ") << (cmd.eom ? "A" : " ") << "]"
