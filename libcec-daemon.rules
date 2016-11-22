@@ -1,3 +1,7 @@
 # udev added named link for cec daemon for ease of setting up other applications
 KERNEL=="event*", ATTRS{name}=="libcec-daemon", SYMLINK="input/by-id/libcec-daemon"
 
+#Allow only the cec group to access CEC devices, so that libcec-daemon can get exclusive use
+
+#Pulse-Eight adapter
+ATTRS{idProduct}=="1002", ATTRS{idVendor}=="2548", SUBSYSTEM=="tty", SYMLINK+="ttyCEC", GROUP="cec"
