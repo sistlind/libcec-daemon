@@ -20,6 +20,6 @@ add_executable(libcec-daemon ${libcec-daemon_SOURCES})
 target_link_libraries(libcec-daemon ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} ${LOG4CPLUS_LIBRARIES} ${Cec_LIBRARIES} ${CMAKE_DL_LIBS})
 
 install(TARGETS libcec-daemon DESTINATION bin)
-install(FILES LICENSE README.md DESTINATION share/libcec-daemon)
+install(FILES LICENCE README.md DESTINATION share/libcec-daemon)
 install(FILES etc/libcec-daemon.rules DESTINATION /lib/udev/rules.d)
 install(FILES etc/libcec-daemon.service DESTINATION /lib/systemd/system/libcec-daemon.service)
