@@ -1,0 +1,11 @@
+[Unit]
+Description=LibCEC uinput daemon
+
+[Service]
+Type=simple
+User=cec
+Group=cec
+ExecStart=/usr/bin/libcec-daemon
+
+[Install]
+WantedBy=multi-user.target
