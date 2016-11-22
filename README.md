@@ -31,7 +31,7 @@ git clone https://github.com/KingBonecrusher/libcec-daemon
 * Now we need some buildtools and libraries
 
 ```
-sudo apt-get install build-essential autoconf 
+sudo apt-get install build-essential cmake
 sudo apt-get install libboost-program-options-dev libboost-thread-dev libboost-system-dev liblog4cplus-dev
 ```
 
@@ -49,7 +49,18 @@ sudo bash install-libcec.sh
 
 ```
 cd libcec-daemon
-./bootstrap && ./configure && make
+cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr .
+make
+```
+
+* Install libcec-daemon
+```
+sudo make install
+```
+
+* libcec-daemon's systemd script and udev rules need the cec user and group:
+```
+sudo adduser --quiet --system --group --disabled-password --system --shell /bin/sh cec
 ```
 
 Usage

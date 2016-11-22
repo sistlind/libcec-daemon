@@ -22,4 +22,4 @@ target_link_libraries(libcec-daemon ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES}
 install(TARGETS libcec-daemon DESTINATION bin)
 install(FILES LICENCE README.md DESTINATION share/libcec-daemon)
 install(FILES etc/libcec-daemon.rules DESTINATION /lib/udev/rules.d)
-install(FILES etc/libcec-daemon.service DESTINATION /lib/systemd/system/libcec-daemon.service)
+install(FILES etc/libcec-daemon.service DESTINATION /lib/systemd/system)
