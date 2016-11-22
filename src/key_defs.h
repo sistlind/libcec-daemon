@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <tr1/unordered_map>
+#include <linux/uinput.h>
 
 /*
  * Input event codes stolen from the Linux kernel.
