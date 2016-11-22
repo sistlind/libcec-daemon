@@ -9,6 +9,17 @@ Currently under the GPL, but only because libcec (on which we depend) is under
 the GPL. I have full intentions to relicence this project as BSD when libcec
 changes to either LGPL, or I do not need to depend on it anymore.
 
+Install
+=======
+
+This package can be installed on Ubuntu Xenial from a PPA:
+
+https://launchpad.net/~benklop/+archive/ubuntu/mmc/
+
+sudo add-apt-repository ppa:benklop/mmc
+sudo apt-get update
+sudo apt-get install libcec-daemon
+
 Build
 =====
 * Checkout the main source
