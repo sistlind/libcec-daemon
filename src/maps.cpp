@@ -19,13 +19,12 @@
 #include "main.h"
 #include <string>
 #include <iostream>
-#include <tr1/unordered_map>
 #include <linux/input-event-codes.h>
 
 using namespace CEC;
 
-const std::tr1::unordered_map<std::string, int> & Main::setupKeyMap() {
- 	const std::tr1::unordered_map<std::string, int> key_table;
+std::map<const std::string, int> Main::setupKeyMap() {
+ 	std::map<const std::string, int> key_table;
  	if(key_table.empty()) {
 		key_table["KEY_RESERVED"] = KEY_RESERVED;
 		key_table["KEY_ESC"] = KEY_ESC;
@@ -566,37 +565,6 @@ const std::tr1::unordered_map<std::string, int> & Main::setupKeyMap() {
 		key_table["KEY_KBDINPUTASSIST_NEXTGROUP"] = KEY_KBDINPUTASSIST_NEXTGROUP;
 		key_table["KEY_KBDINPUTASSIST_ACCEPT"] = KEY_KBDINPUTASSIST_ACCEPT;
 		key_table["KEY_KBDINPUTASSIST_CANCEL"] = KEY_KBDINPUTASSIST_CANCEL;
-
-		/* Diagonal movement keys */
-		key_table["KEY_RIGHT_UP"] = KEY_RIGHT_UP;
-		key_table["KEY_RIGHT_DOWN"] = KEY_RIGHT_DOWN;
-		key_table["KEY_LEFT_UP"] = KEY_LEFT_UP;
-		key_table["KEY_LEFT_DOWN"] = KEY_LEFT_DOWN;
-
-		key_table["KEY_ROOT_MENU"] = KEY_ROOT_MENU; /* Show Device's Root Menu */
-		/* Show Top Menu of the Media (e.g. DVD) */
-		key_table["KEY_MEDIA_TOP_MENU"] = KEY_MEDIA_TOP_MENU;
-		key_table["KEY_NUMERIC_11"] = KEY_NUMERIC_11;
-		key_table["KEY_NUMERIC_12"] = KEY_NUMERIC_12;
-		/*
-		 * Toggle Audio Description: refers to an audio service that helps blind and
-		 * visually impaired consumers understand the action in a program. Note: in
-		 * some countries this is referred to as "Video Description".
-		 */
-		key_table["KEY_AUDIO_DESC"] = KEY_AUDIO_DESC;
-		key_table["KEY_3D_MODE"] = KEY_3D_MODE;
-		key_table["KEY_NEXT_FAVORITE"] = KEY_NEXT_FAVORITE;
-		key_table["KEY_STOP_RECORD"] = KEY_STOP_RECORD;
-		key_table["KEY_PAUSE_RECORD"] = KEY_PAUSE_RECORD;
-		key_table["KEY_VOD"] = KEY_VOD; /* Video on Demand */
-		key_table["KEY_UNMUTE"] = KEY_UNMUTE;
-		key_table["KEY_FASTREVERSE"] = KEY_FASTREVERSE;
-		key_table["KEY_SLOWREVERSE"] = KEY_SLOWREVERSE;
-		/*
-		 * Control a data application associated with the currently viewed channel,
-		 * e.g. teletext or data broadcast application (MHEG, MHP, HbbTV, etc.)
-		 */
-		key_table["KEY_DATA"] = KEY_DATA;
 
 		key_table["BTN_TRIGGER_HAPPY"] = BTN_TRIGGER_HAPPY;
 		key_table["BTN_TRIGGER_HAPPY1"] = BTN_TRIGGER_HAPPY1;

@@ -33,8 +33,6 @@
 #include <log4cplus/loggingmacros.h>
 #include <log4cplus/configurator.h>
 
-#include <tr1/unordered_map>
-
 using namespace CEC;
 using namespace log4cplus;
 
@@ -50,8 +48,8 @@ using std::list;
 static Logger logger = Logger::getInstance("main");
 static boost::mutex libcec_sync;
 static boost::condition_variable libcec_cond;
-static const std::tr1::unordered_map<string, int> Main::uinputKeyMap = Main::setupKeyMap();
-
+std::map<const std::string, int> Main::uinputKeyMap = Main::setupKeyMap();
+const vector<list<__u16>> Main::uinputCecMap = Main::setupUinputMap();
 enum
 {
 	COMMAND_STANDBY,
@@ -243,11 +241,12 @@ char *Main::getCecName() {
 
 std::list<__u16> Main::lookupCecUinputMapping(CEC::cec_user_control_code symbol) {
     //lookup cec string in config
-    std::list<std::string> uinputKeys = lookupConfigMappings(Cec::cecUserControlCodeName.find(symbol));
-    std::list<__u16> uinputKeyCodes;
+    string str = (*Cec::cecUserControlCodeName.find(symbol)).second;
+    std::list<std::string> uinputKeys = lookupConfigMappings(str);
+    std::list<__u16> uinputKeyCodes = {};
     
-    for (std::list<std::string>::const_iterator iterator = uinputKeys.begin(), end = uinputKeys.end(); iterator != end; ++iterator) {
-        uinputKeyCodes << uinputKeyMap.find(*iterator);
+    for (auto iterator = uinputKeys.begin(), end = uinputKeys.end(); iterator != end; ++iterator) {
+        uinputKeyCodes.emplace_back(uinputKeyMap.find(*iterator)->second);
     }
     
     return uinputKeyCodes;
@@ -255,7 +254,7 @@ std::list<__u16> Main::lookupCecUinputMapping(CEC::cec_user_control_code symbol)
 
 //TODO: get this information from a config file instead of hardcoded here
 std::list<std::string> Main::lookupConfigMappings(std::string cecName) {
-    static std::tr1::unordered_map<std::string, list<std::string>> uinputCecMap;
+    static std::map<const std::string, std::list<std::string>> uinputCecMap;
 
 	if (uinputCecMap.empty()) {
 		uinputCecMap["CEC_USER_CONTROL_CODE_SELECT"                      ] = { "KEY_OK" };
@@ -340,7 +339,14 @@ std::list<std::string> Main::lookupConfigMappings(std::string cecName) {
 		uinputCecMap["CEC_USER_CONTROL_CODE_AN_CHANNELS_LIST"            ] = { "KEY_LIST" };
 	}
 
-	return uinputCecMap;
+	return uinputCecMap.find(cecName)->second;
+}
+
+const std::vector<list<__u16>> Main::setupUinputMap() {
+    std::vector<list<__u16>> values;
+    for (auto & pair : uinputCecMap)
+        values.emplace_back(pair);
+    return values;
 }
 
 int Main::onCecLogMessage(const cec_log_message &message) {
@@ -367,7 +373,7 @@ int Main::onCecKeyPress(const cec_keypress &key) {
 
 						LOG4CPLUS_DEBUG(logger, "repeat " << ukey);
 
-						uinput.send_event(EV_KEY, ukey, EV_"KEY_REPEAT");
+						uinput.send_event(EV_KEY, ukey, EV_KEY_REPEAT);
 					}
 				}
 				else
@@ -383,7 +389,7 @@ int Main::onCecKeyPress(const cec_keypress &key) {
 
 							LOG4CPLUS_DEBUG(logger, "release " << ukey);
 
-							uinput.send_event(EV_KEY, ukey, EV_"KEY_RELEASED");
+							uinput.send_event(EV_KEY, ukey, EV_KEY_RELEASED);
 						}
 					}
 					for (std::list<__u16>::const_iterator ukeys = uinputKeys.begin(); ukeys != uinputKeys.end(); ++ukeys) {
@@ -391,7 +397,7 @@ int Main::onCecKeyPress(const cec_keypress &key) {
 
 						LOG4CPLUS_DEBUG(logger, "send " << ukey);
 
-						uinput.send_event(EV_KEY, ukey, EV_"KEY_PRESSED");
+						uinput.send_event(EV_KEY, ukey, EV_KEY_PRESSED);
 					}
 					lastUInputKeys = uinputKeys;
 				}
@@ -405,7 +411,7 @@ int Main::onCecKeyPress(const cec_keypress &key) {
 
 							LOG4CPLUS_DEBUG(logger, "release " << ukey);
 
-							uinput.send_event(EV_KEY, ukey, EV_"KEY_RELEASED");
+							uinput.send_event(EV_KEY, ukey, EV_KEY_RELEASED);
 						}
 					}
 					for (std::list<__u16>::const_iterator ukeys = uinputKeys.begin(); ukeys != uinputKeys.end(); ++ukeys) {
@@ -413,7 +419,7 @@ int Main::onCecKeyPress(const cec_keypress &key) {
 
 						LOG4CPLUS_DEBUG(logger, "send " << ukey);
 
-						uinput.send_event(EV_KEY, ukey, EV_"KEY_PRESSED");
+						uinput.send_event(EV_KEY, ukey, EV_KEY_PRESSED);
 					}
 					boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 				}
@@ -425,7 +431,7 @@ int Main::onCecKeyPress(const cec_keypress &key) {
 
 					LOG4CPLUS_DEBUG(logger, "release " << ukey);
 
-					uinput.send_event(EV_KEY, ukey, EV_"KEY_RELEASED");
+					uinput.send_event(EV_KEY, ukey, EV_KEY_RELEASED);
 
 				}
 				lastUInputKeys.clear();
