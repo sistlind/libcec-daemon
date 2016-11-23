@@ -295,7 +295,7 @@ ostream & Cec::listDevices(ostream & out) {
 	return out;
 }
 
-map<cec_user_control_code, const char *> & Cec::setupUserControlCodeName() {
+map<cec_user_control_code, const char *> & Cec::lookupCecUinputMapping(() {
 	static map<cec_user_control_code, const char *> cecUserControlCodeName;
 
 	if (cecUserControlCodeName.empty()) {

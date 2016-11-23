@@ -45,7 +45,7 @@ class Main : public CecCallback {
 
 		static void signalHandler(int sigNum);
 
-		static const std::vector<std::list<__u16>> & setupUinputMap();
+		static const tr1::unordered_map<string, int> & setupKeyMap();
 		std::queue<Command> commands;
 
 		std::string onStandbyCommand;
@@ -60,8 +60,9 @@ class Main : public CecCallback {
 
 	public:
 
-		static const std::vector<std::list<__u16>> uinputCecMap;
-
+		std::list<__u16> lookupCecUinputMapping(CEC::cec_user_control_code);
+        std::list<std::string> lookupConfigMappings(std::string);
+        
 		int onCecLogMessage(const CEC::cec_log_message &message);
 		int onCecKeyPress(const CEC::cec_keypress &key);
 		int onCecKeyPress(const CEC::cec_user_control_code & keycode);
