@@ -344,8 +344,9 @@ std::list<std::string> Main::lookupConfigMappings(std::string cecName) {
 
 const std::vector<list<__u16>> Main::setupUinputMap() {
     std::vector<list<__u16>> values;
-    for (auto & pair : uinputCecMap)
-        values.emplace_back(pair);
+    for (auto iterator = uinputKeyMap.begin(), end = uinputKeyMap.end(); iterator != end; ++iterator) {
+       values.emplace_back(iterator[1]);
+    }
     return values;
 }
 
