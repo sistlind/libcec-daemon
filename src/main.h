@@ -4,6 +4,7 @@
 #include <string>
 #include <queue>
 #include <list>
+#include <tr1/unordered_map>
 
 class Command
 {
@@ -45,7 +46,7 @@ class Main : public CecCallback {
 
 		static void signalHandler(int sigNum);
 
-		static const tr1::unordered_map<string, int> & setupKeyMap();
+		static const std::tr1::unordered_map<std::string, int> & setupKeyMap();
 		std::queue<Command> commands;
 
 		std::string onStandbyCommand;
