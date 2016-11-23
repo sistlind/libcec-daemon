@@ -60,7 +60,9 @@ class Main : public CecCallback {
 		void push(Command command);
 
 	public:
-
+        
+        static const std::tr1::unordered_map<std::string, int> uinputKeyMap;
+        
 		std::list<__u16> lookupCecUinputMapping(CEC::cec_user_control_code);
         std::list<std::string> lookupConfigMappings(std::string);
         

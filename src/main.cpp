@@ -50,6 +50,7 @@ using std::list;
 static Logger logger = Logger::getInstance("main");
 static boost::mutex libcec_sync;
 static boost::condition_variable libcec_cond;
+static const std::tr1::unordered_map<string, int> Main::uinputKeyMap = Main::setupKeyMap();
 
 enum
 {
@@ -246,7 +247,7 @@ std::list<__u16> Main::lookupCecUinputMapping(CEC::cec_user_control_code symbol)
     std::list<__u16> uinputKeyCodes;
     
     for (std::list<std::string>::const_iterator iterator = uinputKeys.begin(), end = uinputKeys.end(); iterator != end; ++iterator) {
-        uinputKeyCodes << setupKeyMap().find(*iterator);
+        uinputKeyCodes << uinputKeyMap.find(*iterator);
     }
     
     return uinputKeyCodes;
