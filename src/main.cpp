@@ -343,11 +343,15 @@ std::list<std::string> Main::lookupConfigMappings(std::string cecName) {
 }
 
 const std::vector<list<__u16>> Main::setupUinputMap() {
-    std::vector<list<__u16>> values;
-    for (auto iterator = uinputKeyMap.begin(), end = uinputKeyMap.end(); iterator != end; ++iterator) {
-       values.emplace_back(iterator->second);
+  std::vector<list<__u16>> values;
+  for (auto i = uinputCecMap.begin(), end = uinputCecMap.end(); iterator != end; ++i) {
+    std::list<__u16> item_list;
+    for(auto j = i->second.begin(), end = i.end(); j != end; j++) {
+      item_list.emplace_back(uinputKeyMap[*j])
     }
-    return values;
+    values.emplace_back(item_list);
+  }
+  return values;
 }
 
 int Main::onCecLogMessage(const cec_log_message &message) {
