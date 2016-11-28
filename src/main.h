@@ -63,12 +63,12 @@ class Main : public CecCallback {
 
 	public:
         
-        static const std::map<const std::string, int> uinputKeyMap;
-        static std::vector<std::list<__u16>> uinputCecMap;
-        static std::map<const std::string, std::list<std::string>> configMap;
+    static const std::map<const std::string, int> uinputKeyMap;
+    static std::vector<std::list<__u16>> uinputCecMap;
+    static std::map<const std::string, std::list<std::string>> configMap;
         
 		std::list<__u16> lookupCecUinputMapping(CEC::cec_user_control_code);
-        std::list<std::string> lookupConfigMappings(std::string);
+    std::list<std::string> lookupConfigMappings(std::string);
         
 		int onCecLogMessage(const CEC::cec_log_message &message);
 		int onCecKeyPress(const CEC::cec_keypress &key);
