@@ -23,8 +23,8 @@
 
 using namespace CEC;
 
-std::map<const std::string, int> Main::setupKeyMap() {
- 	std::map<const std::string, int> key_table;
+const std::map<const std::string, int> Main::setupKeyMap() {
+ 	static std::map<const std::string, int> key_table;
  	if(key_table.empty()) {
 		key_table["KEY_RESERVED"] = KEY_RESERVED;
 		key_table["KEY_ESC"] = KEY_ESC;

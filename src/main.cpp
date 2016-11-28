@@ -48,8 +48,10 @@ using std::list;
 static Logger logger = Logger::getInstance("main");
 static boost::mutex libcec_sync;
 static boost::condition_variable libcec_cond;
-std::map<const std::string, int> Main::uinputKeyMap = Main::setupKeyMap();
-const vector<list<__u16>> Main::uinputCecMap = Main::setupUinputMap();
+const std::map<const std::string, int> Main::uinputKeyMap = Main::setupKeyMap();
+std::map<const std::string, std::list<std::string>> Main::configMap = Main::setupConfigMap();
+vector<list<__u16>> Main::uinputCecMap = Main::setupUinputMap();
+
 enum
 {
 	COMMAND_STANDBY,
@@ -252,102 +254,107 @@ std::list<__u16> Main::lookupCecUinputMapping(CEC::cec_user_control_code symbol)
     return uinputKeyCodes;
 }
 
-//TODO: get this information from a config file instead of hardcoded here
-std::list<std::string> Main::lookupConfigMappings(std::string cecName) {
-    static std::map<const std::string, std::list<std::string>> uinputCecMap;
+std::map<const std::string, std::list<std::string>> Main::setupConfigMap() {
+    static std::map<const std::string, std::list<std::string>> configMap;
 
-	if (uinputCecMap.empty()) {
-		uinputCecMap["SELECT"                      ] = { "KEY_OK" };
-		uinputCecMap["UP"                          ] = { "KEY_UP" };
-		uinputCecMap["DOWN"                        ] = { "KEY_DOWN" };
-		uinputCecMap["LEFT"                        ] = { "KEY_LEFT" };
-		uinputCecMap["RIGHT"                       ] = { "KEY_RIGHT" };
-		uinputCecMap["RIGHT_UP"                    ] = { "KEY_RIGHT", "KEY_UP" };
-		uinputCecMap["RIGHT_DOWN"                  ] = { "KEY_RIGHT", "KEY_DOWN" };
-		uinputCecMap["LEFT_UP"                     ] = { "KEY_LEFT", "KEY_UP" };
-		uinputCecMap["LEFT_DOWN"                   ] = { "KEY_LEFT", "KEY_DOWN" };
-		uinputCecMap["ROOT_MENU"                   ] = { "KEY_HOME" };
-		uinputCecMap["SETUP_MENU"                  ] = { "KEY_SETUP" };
-		uinputCecMap["CONTENTS_MENU"               ] = { "KEY_MENU" };
-		uinputCecMap["FAVORITE_MENU"               ] = { "KEY_FAVORITES" };
-		uinputCecMap["EXIT"                        ] = { "KEY_EXIT" };
-		uinputCecMap["NUMBER0"                     ] = { "KEY_0" };
-		uinputCecMap["NUMBER1"                     ] = { "KEY_1" };
-		uinputCecMap["NUMBER2"                     ] = { "KEY_2" };
-		uinputCecMap["NUMBER3"                     ] = { "KEY_3" };
-		uinputCecMap["NUMBER4"                     ] = { "KEY_4" };
-		uinputCecMap["NUMBER5"                     ] = { "KEY_5" };
-		uinputCecMap["NUMBER6"                     ] = { "KEY_6" };
-		uinputCecMap["NUMBER7"                     ] = { "KEY_7" };
-		uinputCecMap["NUMBER8"                     ] = { "KEY_8" };
-		uinputCecMap["NUMBER9"                     ] = { "KEY_9" };
-		uinputCecMap["DOT"                         ] = { "KEY_DOT" };
-		uinputCecMap["ENTER"                       ] = { "KEY_ENTER" };
-		uinputCecMap["CLEAR"                       ] = { "KEY_BACKSPACE" };
-		uinputCecMap["NEXT_FAVORITE"               ] = { };
-		uinputCecMap["CHANNEL_UP"                  ] = { "KEY_CHANNELUP" };
-		uinputCecMap["CHANNEL_DOWN"                ] = { "KEY_CHANNELDOWN" };
-		uinputCecMap["PREVIOUS_CHANNEL"            ] = { "KEY_PREVIOUS" };
-		uinputCecMap["SOUND_SELECT"                ] = { "KEY_SOUND" };
-		uinputCecMap["INPUT_SELECT"                ] = { "KEY_TUNER" };
-		uinputCecMap["DISPLAY_INFORMATION"         ] = { "KEY_INFO" };
-		uinputCecMap["HELP"                        ] = { "KEY_HELP" };
-		uinputCecMap["PAGE_UP"                     ] = { "KEY_PAGEUP" };
-		uinputCecMap["PAGE_DOWN"                   ] = { "KEY_PAGEDOWN" };
-		uinputCecMap["POWER"                       ] = { "KEY_POWER" };
-		uinputCecMap["VOLUME_UP"                   ] = { "KEY_VOLUMEUP" };
-		uinputCecMap["VOLUME_DOWN"                 ] = { "KEY_VOLUMEDOWN" };
-		uinputCecMap["MUTE"                        ] = { "KEY_MUTE" };
-		uinputCecMap["PLAY"                        ] = { "KEY_PLAY" };
-		uinputCecMap["STOP"                        ] = { "KEY_STOP" };
-		uinputCecMap["PAUSE"                       ] = { "KEY_PAUSE" };
-		uinputCecMap["RECORD"                      ] = { "KEY_RECORD" };
-		uinputCecMap["REWIND"                      ] = { "KEY_REWIND" };
-		uinputCecMap["FAST_FORWARD"                ] = { "KEY_FASTFORWARD" };
-		uinputCecMap["EJECT"                       ] = { "KEY_EJECTCD" };
-		uinputCecMap["FORWARD"                     ] = { "KEY_FORWARD" };
-		uinputCecMap["BACKWARD"                    ] = { "KEY_BACK" };
-		uinputCecMap["STOP_RECORD"                 ] = { };
-		uinputCecMap["PAUSE_RECORD"                ] = { };
-		uinputCecMap["ANGLE"                       ] = { "KEY_SCREEN" };
-		uinputCecMap["SUB_PICTURE"                 ] = { "KEY_SUBTITLE" };
-		uinputCecMap["VIDEO_ON_DEMAND"             ] = { "KEY_VIDEO" };
-		uinputCecMap["ELECTRONIC_PROGRAM_GUIDE"    ] = { "KEY_EPG" };
-		uinputCecMap["TIMER_PROGRAMMING"           ] = { "KEY_TIME" };
-		uinputCecMap["INITIAL_CONFIGURATION"       ] = { "KEY_CONFIG" };
-		uinputCecMap["PLAY_FUNCTION"               ] = { };
-		uinputCecMap["PAUSE_PLAY_FUNCTION"         ] = { };
-		uinputCecMap["RECORD_FUNCTION"             ] = { };
-		uinputCecMap["PAUSE_RECORD_FUNCTION"       ] = { };
-		uinputCecMap["STOP_FUNCTION"               ] = { };
-		uinputCecMap["MUTE_FUNCTION"               ] = { };
-		uinputCecMap["RESTORE_VOLUME_FUNCTION"     ] = { };
-		uinputCecMap["TUNE_FUNCTION"               ] = { };
-		uinputCecMap["SELECT_MEDIA_FUNCTION"       ] = { "KEY_MEDIA" };
-		uinputCecMap["SELECT_AV_INPUT_FUNCTION"    ] = { };
-		uinputCecMap["SELECT_AUDIO_INPUT_FUNCTION" ] = { };
-		uinputCecMap["POWER_TOGGLE_FUNCTION"       ] = { "KEY_POWER" };
-		uinputCecMap["POWER_OFF_FUNCTION"          ] = { "KEY_POWER2" };
-		uinputCecMap["POWER_ON_FUNCTION"           ] = { "KEY_WAKEUP" };
-		uinputCecMap["F1_BLUE"                     ] = { "KEY_BLUE" };
-		uinputCecMap["F2_RED"                      ] = { "KEY_RED" };
-		uinputCecMap["F3_GREEN"                    ] = { "KEY_GREEN" };
-		uinputCecMap["F4_YELLOW"                   ] = { "KEY_YELLOW" };
-		uinputCecMap["F5"                          ] = { };
-		uinputCecMap["DATA"                        ] = { "KEY_TEXT" };
-		uinputCecMap["AN_RETURN"                   ] = { "KEY_ESC" };
-		uinputCecMap["AN_CHANNELS_LIST"            ] = { "KEY_LIST" };
+	if (configMap.empty()) {
+		configMap["SELECT"                      ] = { "KEY_OK" };
+		configMap["UP"                          ] = { "KEY_UP" };
+		configMap["DOWN"                        ] = { "KEY_DOWN" };
+		configMap["LEFT"                        ] = { "KEY_LEFT" };
+		configMap["RIGHT"                       ] = { "KEY_RIGHT" };
+		configMap["RIGHT_UP"                    ] = { "KEY_RIGHT", "KEY_UP" };
+		configMap["RIGHT_DOWN"                  ] = { "KEY_RIGHT", "KEY_DOWN" };
+		configMap["LEFT_UP"                     ] = { "KEY_LEFT", "KEY_UP" };
+		configMap["LEFT_DOWN"                   ] = { "KEY_LEFT", "KEY_DOWN" };
+		configMap["ROOT_MENU"                   ] = { "KEY_HOME" };
+		configMap["SETUP_MENU"                  ] = { "KEY_SETUP" };
+		configMap["CONTENTS_MENU"               ] = { "KEY_MENU" };
+		configMap["FAVORITE_MENU"               ] = { "KEY_FAVORITES" };
+		configMap["EXIT"                        ] = { "KEY_EXIT" };
+		configMap["NUMBER0"                     ] = { "KEY_0" };
+		configMap["NUMBER1"                     ] = { "KEY_1" };
+		configMap["NUMBER2"                     ] = { "KEY_2" };
+		configMap["NUMBER3"                     ] = { "KEY_3" };
+		configMap["NUMBER4"                     ] = { "KEY_4" };
+		configMap["NUMBER5"                     ] = { "KEY_5" };
+		configMap["NUMBER6"                     ] = { "KEY_6" };
+		configMap["NUMBER7"                     ] = { "KEY_7" };
+		configMap["NUMBER8"                     ] = { "KEY_8" };
+		configMap["NUMBER9"                     ] = { "KEY_9" };
+		configMap["DOT"                         ] = { "KEY_DOT" };
+		configMap["ENTER"                       ] = { "KEY_ENTER" };
+		configMap["CLEAR"                       ] = { "KEY_BACKSPACE" };
+		configMap["NEXT_FAVORITE"               ] = { };
+		configMap["CHANNEL_UP"                  ] = { "KEY_CHANNELUP" };
+		configMap["CHANNEL_DOWN"                ] = { "KEY_CHANNELDOWN" };
+		configMap["PREVIOUS_CHANNEL"            ] = { "KEY_PREVIOUS" };
+		configMap["SOUND_SELECT"                ] = { "KEY_SOUND" };
+		configMap["INPUT_SELECT"                ] = { "KEY_TUNER" };
+		configMap["DISPLAY_INFORMATION"         ] = { "KEY_INFO" };
+		configMap["HELP"                        ] = { "KEY_HELP" };
+		configMap["PAGE_UP"                     ] = { "KEY_PAGEUP" };
+		configMap["PAGE_DOWN"                   ] = { "KEY_PAGEDOWN" };
+		configMap["POWER"                       ] = { "KEY_POWER" };
+		configMap["VOLUME_UP"                   ] = { "KEY_VOLUMEUP" };
+		configMap["VOLUME_DOWN"                 ] = { "KEY_VOLUMEDOWN" };
+		configMap["MUTE"                        ] = { "KEY_MUTE" };
+		configMap["PLAY"                        ] = { "KEY_PLAY" };
+		configMap["STOP"                        ] = { "KEY_STOP" };
+		configMap["PAUSE"                       ] = { "KEY_PAUSE" };
+		configMap["RECORD"                      ] = { "KEY_RECORD" };
+		configMap["REWIND"                      ] = { "KEY_REWIND" };
+		configMap["FAST_FORWARD"                ] = { "KEY_FASTFORWARD" };
+		configMap["EJECT"                       ] = { "KEY_EJECTCD" };
+		configMap["FORWARD"                     ] = { "KEY_FORWARD" };
+		configMap["BACKWARD"                    ] = { "KEY_BACK" };
+		configMap["STOP_RECORD"                 ] = { };
+		configMap["PAUSE_RECORD"                ] = { };
+		configMap["ANGLE"                       ] = { "KEY_SCREEN" };
+		configMap["SUB_PICTURE"                 ] = { "KEY_SUBTITLE" };
+		configMap["VIDEO_ON_DEMAND"             ] = { "KEY_VIDEO" };
+		configMap["ELECTRONIC_PROGRAM_GUIDE"    ] = { "KEY_EPG" };
+		configMap["TIMER_PROGRAMMING"           ] = { "KEY_TIME" };
+		configMap["INITIAL_CONFIGURATION"       ] = { "KEY_CONFIG" };
+		configMap["PLAY_FUNCTION"               ] = { };
+		configMap["PAUSE_PLAY_FUNCTION"         ] = { };
+		configMap["RECORD_FUNCTION"             ] = { };
+		configMap["PAUSE_RECORD_FUNCTION"       ] = { };
+		configMap["STOP_FUNCTION"               ] = { };
+		configMap["MUTE_FUNCTION"               ] = { };
+		configMap["RESTORE_VOLUME_FUNCTION"     ] = { };
+		configMap["TUNE_FUNCTION"               ] = { };
+		configMap["SELECT_MEDIA_FUNCTION"       ] = { "KEY_MEDIA" };
+		configMap["SELECT_AV_INPUT_FUNCTION"    ] = { };
+		configMap["SELECT_AUDIO_INPUT_FUNCTION" ] = { };
+		configMap["POWER_TOGGLE_FUNCTION"       ] = { "KEY_POWER" };
+		configMap["POWER_OFF_FUNCTION"          ] = { "KEY_POWER2" };
+		configMap["POWER_ON_FUNCTION"           ] = { "KEY_WAKEUP" };
+		configMap["F1_BLUE"                     ] = { "KEY_BLUE" };
+		configMap["F2_RED"                      ] = { "KEY_RED" };
+		configMap["F3_GREEN"                    ] = { "KEY_GREEN" };
+		configMap["F4_YELLOW"                   ] = { "KEY_YELLOW" };
+		configMap["F5"                          ] = { };
+		configMap["DATA"                        ] = { "KEY_TEXT" };
+		configMap["AN_RETURN"                   ] = { "KEY_ESC" };
+		configMap["AN_CHANNELS_LIST"            ] = { "KEY_LIST" };
 	}
 
-	return uinputCecMap.find(cecName)->second;
+	return configMap;
 }
 
-const std::vector<list<__u16>> Main::setupUinputMap() {
+//TODO: get this information from a config file instead of hardcoded here
+std::list<std::string> Main::lookupConfigMappings(std::string cecName) {
+  return configMap.find(cecName)->second;
+}
+
+std::vector<list<__u16>> Main::setupUinputMap() {
   std::vector<list<__u16>> values;
-  for (auto i = uinputCecMap.begin(), end = uinputCecMap.end(); iterator != end; ++i) {
+  for (auto i = configMap.begin(), end = configMap.end(); i != end; ++i) {
     std::list<__u16> item_list;
-    for(auto j = i->second.begin(), end = i.end(); j != end; j++) {
-      item_list.emplace_back(uinputKeyMap[*j])
+    for(auto j = i->second.begin(), end = i->second.end(); j != end; j++) {
+    	string * key = &*j;
+      item_list.emplace_back(uinputKeyMap.find(*key)->second);
     }
     values.emplace_back(item_list);
   }
