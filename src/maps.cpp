@@ -627,7 +627,7 @@ map<const string, list<string>> Main::setupConfigMap() {
     map<const string, list<string>> configMap;
 
     set<string> options;
-    options.insert("key_mapping");
+    options.insert("key_mapping.*");
     ifstream config("/etc/libcec-daemon.conf");
     if(!config) {
         cerr<<"error loading config file"<<endl;
