@@ -1,30 +1,28 @@
 /*
  * Input event codes taken from the Linux kernel and trasformed with regex.
- *
- *    *** IMPORTANT ***
- * This file is not only included from C-code but also from devicetree source
- * files. As such this file MUST only contain comments and defines.
- *
- * original file:
- * Copyright (c) 1999-2002 Vojtech Pavlik
- * Copyright (c) 2015 Hans de Goede <hdegoede@redhat.com>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
  */
 
 #ifndef maps
 #define maps
+
 #include "main.h"
 #include <string>
 #include <iostream>
 #include <linux/input-event-codes.h>
+#include <set>
+#include <sstream>
+#include <exception>
+#include <fstream>
+#include <cstdint>
 
+#include <boost/config.hpp>
+#include <boost/program_options/detail/config_file.hpp>
+#include <boost/program_options/parsers.hpp>
 using namespace CEC;
+using namespace std;
 
-const std::map<const std::string, int> Main::setupKeyMap() {
- 	static std::map<const std::string, int> key_table;
+const map<const string, int> Main::setupKeyMap() {
+ 	static map<const string, int> key_table;
  	if(key_table.empty()) {
 		key_table["KEY_RESERVED"] = KEY_RESERVED;
 		key_table["KEY_ESC"] = KEY_ESC;
@@ -611,5 +609,53 @@ const std::map<const std::string, int> Main::setupKeyMap() {
 	return key_table;
 }
 
+
+list<__u16> Main::lookupCecUinputMapping(CEC::cec_user_control_code symbol) {
+    //lookup cec string in config
+    string str = Cec::cecUserControlCodeName.find(symbol)->second;
+    list<string> uinputKeys = lookupConfigMappings(str);
+    list<__u16> uinputKeyCodes = {};
+    
+    for (auto iterator = uinputKeys.begin(), end = uinputKeys.end(); iterator != end; ++iterator) {
+        uinputKeyCodes.emplace_back(uinputKeyMap.find(*iterator)->second);
+    }
+    
+    return uinputKeyCodes;
+}
+
+map<const string, list<string>> Main::setupConfigMap() {
+    map<const string, list<string>> configMap;
+
+    set<string> options;
+    options.insert("key_mapping");
+    ifstream config("/etc/libcec-daemon.conf");
+    if(!config) {
+        cerr<<"error loading config file"<<endl;
+    }
+    else {
+      for(boost::program_options::detail::config_file_iterator iter(config, options), end; iter != end; ++iter) {
+          list<string> valueList(iter->value.begin(), iter->value.end());
+          configMap["iter->string_key"] = valueList;
+      }
+    }
+	return configMap;
+}
+
+list<string> Main::lookupConfigMappings(string cecName) {
+  return configMap.find(cecName)->second;
+}
+
+vector<list<__u16>> Main::setupUinputMap() {
+  vector<list<__u16>> values;
+  for (auto i = configMap.begin(), end = configMap.end(); i != end; ++i) {
+    list<__u16> item_list;
+    for(auto j = i->second.begin(), end = i->second.end(); j != end; j++) {
+    	string * key = &*j;
+      item_list.emplace_back(uinputKeyMap.find(*key)->second);
+    }
+    values.emplace_back(item_list);
+  }
+  return values;
+}
 
 #endif //maps
