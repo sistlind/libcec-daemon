@@ -1,3 +1,6 @@
+#ifndef libcec_h
+#define libcec_h
+
 #include <cstddef>
 #include <libcec/cec.h>
 
@@ -30,9 +33,6 @@ class CecCallback {
 class Cec {
 
 	private:
-
-		static std::map<CEC::cec_user_control_code, const char *> & setupUserControlCodeName();
-
 		// Members for the libcec interface
 		CEC::ICECCallbacks callbacks;
 		CEC::libcec_configuration config;
@@ -43,9 +43,6 @@ class Cec {
 		void init();
 
 	public:
-
-		const static std::map<CEC::cec_user_control_code, const char *> cecUserControlCodeName;
-
 		Cec(const char *name, CecCallback *callback);
 		virtual ~Cec();
 
@@ -84,3 +81,5 @@ std::ostream& operator<<(std::ostream &out, const CEC::cec_log_message & message
 std::ostream& operator<<(std::ostream &out, const CEC::cec_keypress & key);
 std::ostream& operator<<(std::ostream &out, const CEC::cec_command & command);
 std::ostream& operator<<(std::ostream &out, const CEC::libcec_configuration & configuration);
+
+#endif //libcec_h

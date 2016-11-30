@@ -9,6 +9,7 @@
 #include "main.h"
 #include "config.h"
 #include "hdmi.h"
+#include "maps.h"
 
 #define CEC_NAME    "linux PC"
 #define UINPUT_NAME "libcec-daemon"
@@ -45,12 +46,10 @@ using std::vector;
 using std::queue;
 using std::list;
 
-static Logger logger = Logger::getInstance("main");
+Logger Main::logger = Logger::getInstance("main");
+
 static boost::mutex libcec_sync;
 static boost::condition_variable libcec_cond;
-const std::map<const std::string, int> Main::uinputKeyMap = Main::setupKeyMap();
-std::map<const std::string, std::list<std::string>> Main::configMap = Main::setupConfigMap();
-vector<list<__u16>> Main::uinputCecMap = Main::setupUinputMap();
 
 enum
 {
@@ -69,7 +68,7 @@ Main & Main::instance() {
 	return main;
 }
 
-Main::Main() : cec(getCecName(), this), uinput(UINPUT_NAME, uinputCecMap),
+Main::Main() : cec(getCecName(), this), uinput(UINPUT_NAME, Maps::uinputCecMap),
 	makeActive(true), running(false), lastUInputKeys({ }), logicalAddress(CECDEVICE_UNKNOWN)
 {
 	LOG4CPLUS_TRACE_STR(logger, "Main::Main()");
@@ -251,8 +250,7 @@ int Main::onCecKeyPress(const cec_keypress &key) {
 
 	// Check bounds and find uinput code for this cec keypress
 	if (key.keycode >= 0 && key.keycode <= CEC_USER_CONTROL_CODE_MAX) {
-		const list<__u16> & uinputKeys = lookupCecUinputMapping(key.keycode);
-
+    const list<__u16> & uinputKeys = Maps::uinputCecMap.find(key.keycode)->second;
 		if ( !uinputKeys.empty() ) {
 			if( key.duration == 0 ) {
 				if( uinputKeys == lastUInputKeys )

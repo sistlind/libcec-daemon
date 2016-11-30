@@ -1,7 +1,10 @@
+#ifndef uinput_h
+#define uinput_h
+
 #include <linux/input.h>
 
-#include <vector>
 #include <list>
+#include <map>
 
 #define EV_KEY_RELEASED 0
 #define EV_KEY_PRESSED  1
@@ -13,7 +16,7 @@ private:
 
 	int open(const char *uinput_path);
 	void openAll();
-	void setup(const char *dev_name, const std::vector< std::list<__u16> > & keys);
+  void setup(const char *dev_name, const std::map<const __u16,  std::list<__u16> > & keys);
 	void create();
 
 	void destroy();
@@ -22,9 +25,11 @@ private:
 	// onUInputEvent(
 
 public:
-	UInput(const char *dev_name, const std::vector< std::list<__u16> > & keys);
+  UInput(const char *dev_name, const std::map<const __u16,  std::list<__u16> > & keys);
 	virtual ~UInput();
 
 	void send_event(__u16 type, __u16 code, __s32 value) const;
 	void sync() const;
 };
+
+#endif //uinput_h

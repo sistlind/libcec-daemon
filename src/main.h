@@ -1,9 +1,13 @@
+#ifndef main_h
+#define main_h
+
 #include "uinput.h"
 #include "libcec.h"
 #include <limits.h>
 #include <string>
 #include <queue>
 #include <list>
+#include <log4cplus/logger.h>
 
 class Command
 {
@@ -66,6 +70,7 @@ class Main : public CecCallback {
     static const std::map<const std::string, int> uinputKeyMap;
     static std::vector<std::list<__u16>> uinputCecMap;
     static std::map<const std::string, std::list<std::string>> configMap;
+    static log4cplus::Logger logger;
         
 		std::list<__u16> lookupCecUinputMapping(CEC::cec_user_control_code);
     std::list<std::string> lookupConfigMappings(std::string);
@@ -95,3 +100,4 @@ class Main : public CecCallback {
 		void setTargetAddress(const HDMI::address & address) {cec.setTargetAddress(address);};
 };
 
+#endif //main_h
