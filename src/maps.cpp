@@ -18,6 +18,10 @@
 #include <boost/config.hpp>
 #include <boost/program_options/detail/config_file.hpp>
 #include <boost/program_options/parsers.hpp>
+
+#include <log4cplus/logger.h>
+#include <log4cplus/loggingmacros.h>
+#include <log4cplus/configurator.h>
 using namespace CEC;
 using namespace std;
 
@@ -615,7 +619,7 @@ list<__u16> Main::lookupCecUinputMapping(CEC::cec_user_control_code symbol) {
     string str = Cec::cecUserControlCodeName.find(symbol)->second;
     list<string> uinputKeys = lookupConfigMappings(str);
     list<__u16> uinputKeyCodes = {};
-    
+
     for (auto iterator = uinputKeys.begin(), end = uinputKeys.end(); iterator != end; ++iterator) {
         uinputKeyCodes.emplace_back(uinputKeyMap.find(*iterator)->second);
     }
@@ -627,15 +631,17 @@ map<const string, list<string>> Main::setupConfigMap() {
     map<const string, list<string>> configMap;
 
     set<string> options;
-    options.insert("*");
+    options.insert("key_mapping.*");
     ifstream config("/etc/libcec-daemon.conf");
     if(!config) {
         cerr<<"error loading config file"<<endl;
     }
     else {
       for(boost::program_options::detail::config_file_iterator iter(config, options), end; iter != end; ++iter) {
-          list<string> valueList(iter->value.begin(), iter->value.end());
-          configMap["iter->string_key"] = valueList;
+        string key = iter->string_key;
+        key.erase(0, 12);
+        cout << key << " = " << iter->value[0] << endl;
+        configMap[key].emplace_back(iter->value[0]);
       }
     }
 	return configMap;
@@ -650,7 +656,7 @@ vector<list<__u16>> Main::setupUinputMap() {
   for (auto i = configMap.begin(), end = configMap.end(); i != end; ++i) {
     list<__u16> item_list;
     for(auto j = i->second.begin(), end = i->second.end(); j != end; j++) {
-    	string * key = &*j;
+      string * key = &*j;
       item_list.emplace_back(uinputKeyMap.find(*key)->second);
     }
     values.emplace_back(item_list);
