@@ -78,7 +78,7 @@ class Main : public CecCallback {
 		int onCecLogMessage(const CEC::cec_log_message &message);
 		int onCecKeyPress(const CEC::cec_keypress &key);
 		int onCecKeyPress(const CEC::cec_user_control_code & keycode);
-		int onCecCommand(const CEC::cec_command &command);
+		int onCecCommandReceived(const CEC::cec_command &command);
 		int onCecConfigurationChanged(const CEC::libcec_configuration & configuration);
 		int onCecAlert(const CEC::libcec_alert alert, const CEC::libcec_parameter & param);
 		int onCecMenuStateChanged(const CEC::cec_menu_state & menu_state);
