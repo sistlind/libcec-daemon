@@ -20,7 +20,7 @@ class CecCallback {
 		// Virtual methods to handle callbacks
 		virtual int onCecLogMessage(const CEC::cec_log_message & message) = 0;
 		virtual int onCecKeyPress  (const CEC::cec_keypress & key) = 0;
-		virtual int onCecCommand   (const CEC::cec_command & command) = 0;
+		virtual int onCecCommandReceived(const CEC::cec_command & command) = 0;
 		virtual int onCecConfigurationChanged(const CEC::libcec_configuration & configuration) = 0;
 		virtual int onCecAlert(const CEC::libcec_alert alert, const CEC::libcec_parameter & param) = 0;
 		virtual int onCecMenuStateChanged(const CEC::cec_menu_state & menu_state) = 0;
@@ -68,7 +68,7 @@ class Cec {
 	// These are just wrapper functions, to map C callbacks to C++
 	friend int cecLogMessage (void *cbParam, const CEC::cec_log_message &message);
 	friend int cecKeyPress   (void *cbParam, const CEC::cec_keypress &key);
-	friend int cecCommand    (void *cbParam, const CEC::cec_command &command);
+	friend int cecCommandReceived(void *cbParam, const CEC::cec_command &command);
 	friend int cecConfigurationChanged (void *cbParam, const CEC::libcec_configuration & configuration);
 	friend int cecAlert(void *cbParam, const CEC::libcec_alert alert, const CEC::libcec_parameter & param);
 	friend int cecMenuStateChanged(void *cbParam, const CEC::cec_menu_state & menu_state);

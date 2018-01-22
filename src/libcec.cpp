@@ -49,39 +49,34 @@ static Logger logger = Logger::getInstance("libcec");
 // We store a global handle, so we can use g_cec->ToString(..) in certain cases. This is a bit of a HACK :(
 static ICECAdapter * g_cec = NULL;
 
-int cecLogMessage(void *cbParam, const cec_log_message message) {
+void cecLogMessage(void *cbParam, const cec_log_message *message) {
 	try {
-		return ((CecCallback*) cbParam)->onCecLogMessage(message);
+		((CecCallback*) cbParam)->onCecLogMessage(*message);
 	} catch (...) {}
-	return 0;
 }
 
-int cecKeyPress(void *cbParam, const cec_keypress key) {
+void cecKeyPress(void *cbParam, const cec_keypress *key) {
 	try {
-		return ((CecCallback*) cbParam)->onCecKeyPress(key);
+		((CecCallback*) cbParam)->onCecKeyPress(*key);
 	} catch (...) {}
-	return 0;
 }
 
-int cecCommand(void *cbParam, const cec_command command) {
+void cecCommandReceived(void *cbParam, const cec_command *command) {
 	try {
-		return ((CecCallback*) cbParam)->onCecCommand(command);
+		((CecCallback*) cbParam)->onCecCommandReceived(*command);
 	} catch (...) {}
-	return 0;
 }
 
-int cecAlert(void *cbParam, const libcec_alert alert, const libcec_parameter param) {
+void cecAlert(void *cbParam, const libcec_alert alert, const libcec_parameter param) {
 	try {
-		return ((CecCallback*) cbParam)->onCecAlert(alert, param);
+		((CecCallback*) cbParam)->onCecAlert(alert, param);
 	} catch (...) {}
-	return 0;
 }
 
-int cecConfigurationChanged(void *cbParam, const libcec_configuration configuration) {
+void cecConfigurationChanged(void *cbParam, const libcec_configuration *configuration) {
 	try {
-		return ((CecCallback*) cbParam)->onCecConfigurationChanged(configuration);
+		((CecCallback*) cbParam)->onCecConfigurationChanged(*configuration);
 	} catch (...) {}
-	return 0;
 }
 
 int cecMenuStateChanged(void *cbParam, const cec_menu_state menu_state) {
@@ -140,16 +135,16 @@ Cec::Cec(const char * name, CecCallback * callback)
 	strncpy(config.strDeviceName, name, sizeof(config.strDeviceName));
 	config.deviceTypes.Add(CEC_DEVICE_TYPE_RECORDING_DEVICE);
 
-	callbacks.CBCecLogMessage           = &::cecLogMessage;
-	callbacks.CBCecKeyPress             = &::cecKeyPress;
-	callbacks.CBCecCommand              = &::cecCommand;
-	callbacks.CBCecConfigurationChanged = &::cecConfigurationChanged;
-	callbacks.CBCecAlert                = &::cecAlert;
-	callbacks.CBCecMenuStateChanged     = &::cecMenuStateChanged;
-	callbacks.CBCecSourceActivated      = &::cecSourceActivated;
+	callbacks.logMessage           = &::cecLogMessage;
+	callbacks.keyPress             = &::cecKeyPress;
+	callbacks.commandReceived      = &::cecCommandReceived;
+	callbacks.configurationChanged = &::cecConfigurationChanged;
+	callbacks.alert                = &::cecAlert;
+	callbacks.menuStateChanged     = &::cecMenuStateChanged;
+	callbacks.sourceActivated      = &::cecSourceActivated;
 
-	config.callbackParam                = callback;
-	config.callbacks                    = &callbacks;
+	config.callbackParam           = callback;
+	config.callbacks               = &callbacks;
 }
 
 Cec::~Cec() {}
@@ -176,9 +171,9 @@ CEC::cec_logical_address Cec::open(const std::string &name) {
 	init();
 
 	// Search for adapters
-	cec_adapter devices[MAX_CEC_PORTS];
+	cec_adapter_descriptor devices[MAX_CEC_PORTS];
 
-	uint8_t ret = cec->FindAdapters(devices, MAX_CEC_PORTS, NULL);
+	uint8_t ret = cec->DetectAdapters(devices, MAX_CEC_PORTS);
 	if (ret < 0) {
 		throw std::runtime_error("Error occurred searching for adapters");
 	}
@@ -192,9 +187,9 @@ CEC::cec_logical_address Cec::open(const std::string &name) {
         LOG4CPLUS_INFO(logger, "Looking for " << name);
 		for(id=0; id<ret; ++id)
 		{
-			if( name.compare(devices[id].path) == 0 )
+			if( name.compare(devices[id].strComPath) == 0 )
 				break;
-			if( name.compare(devices[id].comm) == 0 )
+			if( name.compare(devices[id].strComName) == 0 )
 				break;
 		}
 		if( id == ret )
@@ -204,13 +199,13 @@ CEC::cec_logical_address Cec::open(const std::string &name) {
 	}
 
 	// Just use the first found
-	LOG4CPLUS_INFO(logger, "Opening " << devices[id].path);
+	LOG4CPLUS_INFO(logger, "Opening " << devices[id].strComPath);
 
-	if (!cec->Open(devices[id].comm)) {
+	if (!cec->Open(devices[id].strComName)) {
 		throw std::runtime_error("Failed to open adapter");
 	}
 
-	LOG4CPLUS_INFO(logger, "Opened " << devices[id].path);
+	LOG4CPLUS_INFO(logger, "Opened " << devices[id].strComPath);
 	/* return logical address as negociated by libcec */
 	return (cec->GetLogicalAddresses()).primary;
 }
@@ -253,11 +248,11 @@ bool Cec::ping() {
  * This will close any open device!
  */
 ostream & Cec::listDevices(ostream & out) {
-	cec_adapter devices[MAX_CEC_PORTS];
+	cec_adapter_descriptor devices[MAX_CEC_PORTS];
 
     init();
 
-	int8_t ret = cec->FindAdapters(devices, MAX_CEC_PORTS, NULL);
+	int8_t ret = cec->DetectAdapters(devices, MAX_CEC_PORTS);
 	if (ret < 0) {
 		LOG4CPLUS_ERROR(logger, "Error occurred searching for adapters");
 		return out;
@@ -268,9 +263,9 @@ ostream & Cec::listDevices(ostream & out) {
 	}
 
 	for (int8_t i = 0; i < ret; i++) {
-		out << "[" << (int) i << "] port:" << devices[i].comm << " path:" << devices[i].path << endl;
+		out << "[" << (int) i << "] port:" << devices[i].strComName << " path:" << devices[i].strComPath << endl;
 
-		if (!cec->Open(devices[i].comm)) {
+		if (!cec->Open(devices[i].strComName)) {
 			out << "\tFailed to open" << endl;
 		}
 
@@ -280,12 +275,12 @@ ostream & Cec::listDevices(ostream & out) {
 				cec_logical_address logical_addres = (cec_logical_address) j;
 
                 HDMI::physical_address physical_address(cec->GetDevicePhysicalAddress(logical_addres));
-				cec_osd_name name = cec->GetDeviceOSDName(logical_addres);
+				string name = cec->GetDeviceOSDName(logical_addres);
 				cec_vendor_id vendor = (cec_vendor_id) cec->GetDeviceVendorId(logical_addres);
 
 				out << "\t"  << cec->ToString(logical_addres)
 				    << " @ 0x" << hex << physical_address
-				    << " "   << name.name << " (" << cec->ToString(vendor) << ")"
+				    << " "   << name << " (" << cec->ToString(vendor) << ")"
 				    << endl;
 			}
 		}

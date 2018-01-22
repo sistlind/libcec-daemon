@@ -350,8 +350,8 @@ int Main::onCecKeyPress(const cec_user_control_code & keycode) {
 	return 1;
 }
 
-int Main::onCecCommand(const cec_command & command) {
-	LOG4CPLUS_DEBUG(logger, "Main::onCecCommand(" << command << ")");
+int Main::onCecCommandReceived(const cec_command & command) {
+	LOG4CPLUS_DEBUG(logger, "Main::onCecCommandReceived(" << command << ")");
 	switch( command.opcode )
 	{
 		case CEC_OPCODE_STANDBY:
