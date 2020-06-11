@@ -94,7 +94,8 @@ void Main::loop(const string & device) {
 	{
 		/* Get logicalAddress after openning device */
 		logicalAddress = cec.open(device);
-		LOG4CPLUS_INFO(logger, "Address \"" << logicalAddress << "\"");
+		LOG4CPLUS_INFO(logger, "Logical Address \"" << logicalAddress << "\"");
+               
 		if ( logicalAddress != CECDEVICE_UNKNOWN)
 		    running = true;
 
@@ -104,7 +105,9 @@ void Main::loop(const string & device) {
 		sigaction (SIGTERM, &action, NULL);
 
 		if (makeActive) {
+			LOG4CPLUS_INFO(logger,"wait for tv is powered and makeactive");
 			cec.makeActive();
+            LOG4CPLUS_INFO(logger,"we are now the active device");
 		}
 
 		do
@@ -118,7 +121,9 @@ void Main::loop(const string & device) {
 				{
 					case COMMAND_STANDBY:
 						if( ! onStandbyCommand.empty() )
-						{
+				
+
+		{
 							LOG4CPLUS_DEBUG(logger, "Standby: Running \"" << onStandbyCommand << "\"");
 							int ret = system(onStandbyCommand.c_str());
                             if( ret )
@@ -420,7 +425,10 @@ int Main::onCecAlert(const CEC::libcec_alert alert, const CEC::libcec_parameter 
 		case CEC_ALERT_CONNECTION_LOST:
 		case CEC_ALERT_PERMISSION_ERROR:
 		case CEC_ALERT_PORT_BUSY:
+			Main::instance().restart();
+			break;
 		case CEC_ALERT_PHYSICAL_ADDRESS_ERROR:
+            break;
 		case CEC_ALERT_TV_POLL_FAILED:
 			Main::instance().restart();
 			break;
@@ -551,12 +559,7 @@ int main (int argc, char *argv[]) {
 	try {
 		// Create the main
 		Main & main = Main::instance();
-        string device = "";
-
-		if (vm.count("list")) {
-			main.listDevices();
-			return 0;
-		}
+        	string device = "";
 
 		if (vm.count("donotactivate")) {
 			main.setMakeActive(false);
@@ -581,6 +584,12 @@ int main (int argc, char *argv[]) {
 		if (vm.count("port")) {
             main.setTargetAddress(vm["port"].as< HDMI::address >());
         }
+
+
+		if (vm.count("list")) {
+			main.listDevices();
+			return 0;
+		}
 
         if (vm.count("daemon")) {
             if( daemon(0, 0) )

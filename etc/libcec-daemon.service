@@ -1,11 +1,14 @@
 [Unit]
 Description=LibCEC uinput daemon
+After=rc.local.service
 
 [Service]
 Type=simple
 User=cec
 Group=cec
-ExecStart=/usr/bin/libcec-daemon
+ExecStart=/usr/bin/libcec-daemon --port 2
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
+

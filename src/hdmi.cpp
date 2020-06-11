@@ -63,7 +63,9 @@ std::istream& operator>>(std::istream &in, HDMI::address & address)
     char c = in.peek();
     if( c >= '0' && c <= '9' )
     {
+	address.logical = CEC::CECDEVICE_TV;
         in >> address.physical;
+	address.port= c-'0';
     }
     else
     {

@@ -214,28 +214,32 @@ void Cec::close(bool makeInactive) {
 	assert(cec);
 
     if (makeInactive)
-        cec->SetInactiveView();
+//cec->SetInactiveView();
     cec->Close();
 }
 
 void Cec::setTargetAddress(const HDMI::address & address) {
 	LOG4CPLUS_INFO(logger, "Physical Address is set to " << address.physical);
-    config.iPhysicalAddress = address.physical;
+        config.iPhysicalAddress = address.physical;
 	LOG4CPLUS_INFO(logger, "Base device is set to " << address.logical);
-	config.baseDevice = address.logical;
+	config.baseDevice =  address.logical;
 	LOG4CPLUS_INFO(logger, "HDMI port is set to " << (int)address.port);
-	config.iHDMIPort = address.port;
+	config.iHDMIPort = 2;
+  
 }
 
 void Cec::makeActive() {
 	assert(cec);
 
 	// and made active
-	if (!cec->SetActiveSource(config.deviceTypes[0])) {
+    while (cec->GetDevicePowerStatus(CECDEVICE_TV) != CEC_POWER_STATUS_ON ) {
+        sleep(1);
+    }
+	if (!cec->SetActiveSource()) {
 		throw std::runtime_error("Failed to become active");
 	}
+ 
 }
-
 bool Cec::ping() {
 	assert(cec);
 
