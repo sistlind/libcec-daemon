@@ -417,22 +417,32 @@ int Main::onCecCommandReceived(const cec_command & command) {
 }
 
 int Main::onCecAlert(const CEC::libcec_alert alert, const CEC::libcec_parameter & param) {
-	LOG4CPLUS_ERROR(logger, "Main::onCecAlert(alert=" << alert << ")");
 	switch( alert )
 	{
 		case CEC_ALERT_SERVICE_DEVICE:
+            LOG4CPLUS_ERROR(logger, "Main::onCecAlert(alert=CEC_ALERT_SERVICE_DEVICE)");
 			break;
 		case CEC_ALERT_CONNECTION_LOST:
+            LOG4CPLUS_ERROR(logger, "Main::onCecAlert(alert=CEC_ALERT_CONNECTION_LOST)");
+			Main::instance().restart();
+			break;
 		case CEC_ALERT_PERMISSION_ERROR:
+            LOG4CPLUS_ERROR(logger, "Main::onCecAlert(alert=CEC_ALERT_PERMISSION_ERROR)");
+			Main::instance().restart();
+			break;
 		case CEC_ALERT_PORT_BUSY:
+            LOG4CPLUS_ERROR(logger, "Main::onCecAlert(alert=CEC_ALERT_PORT_BUSY)");
 			Main::instance().restart();
 			break;
 		case CEC_ALERT_PHYSICAL_ADDRESS_ERROR:
+            LOG4CPLUS_ERROR(logger, "Main::onCecAlert(alert=CEC_ALERT_PHYSICAL_ADDRESS_ERROR)");
             break;
 		case CEC_ALERT_TV_POLL_FAILED:
+            LOG4CPLUS_WARN(logger, "Main::onCecAlert(alert=CEC_ALERT_TV_POLL_FAILED)");
 			Main::instance().restart();
 			break;
 		default:
+            LOG4CPLUS_ERROR(logger, "Main::onCecAlert(alert=" << alert << ")");
 			break;
 	}
 	return 1;
