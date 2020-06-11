@@ -213,8 +213,9 @@ CEC::cec_logical_address Cec::open(const std::string &name) {
 void Cec::close(bool makeInactive) {
 	assert(cec);
 
-    if (makeInactive)
-//cec->SetInactiveView();
+    if (makeInactive){
+        //cec->SetInactiveView();
+    }
     cec->Close();
 }
 
