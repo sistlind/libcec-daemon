@@ -62,6 +62,7 @@ class Cec {
 		void close(bool makeInactive = true);
 
 		void makeActive();
+		void waitTVready();
 		void setTargetAddress(const HDMI::address & address);
 		bool ping();
 

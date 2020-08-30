@@ -133,7 +133,9 @@ Cec::Cec(const char * name, CecCallback * callback)
 	config.Clear();
 
 	strncpy(config.strDeviceName, name, sizeof(config.strDeviceName));
+    //config.deviceTypes.Add(CEC_DEVICE_TYPE_TUNER);
 	config.deviceTypes.Add(CEC_DEVICE_TYPE_RECORDING_DEVICE);
+
 
 	callbacks.logMessage           = &::cecLogMessage;
 	callbacks.keyPress             = &::cecKeyPress;
@@ -229,13 +231,22 @@ void Cec::setTargetAddress(const HDMI::address & address) {
   
 }
 
+void Cec::waitTVready() {
+    while (!cec->PollDevice(CECDEVICE_TV)) {
+	//cout << "poll-status:" << cec->PollDevice(CECDEVICE_TV) << "\n";        
+	sleep(1);
+    }
+
+    while (cec->GetDevicePowerStatus(CECDEVICE_TV) != CEC_POWER_STATUS_ON ) {
+	//cout << "pwr-status:" << cec->ToString(cec->GetDevicePowerStatus(CECDEVICE_TV)) << "\n";        
+	sleep(1);
+    }
+ 
+}
+
 void Cec::makeActive() {
 	assert(cec);
 
-	// and made active
-    while (cec->GetDevicePowerStatus(CECDEVICE_TV) != CEC_POWER_STATUS_ON ) {
-        sleep(1);
-    }
 	if (!cec->SetActiveSource()) {
 		throw std::runtime_error("Failed to become active");
 	}

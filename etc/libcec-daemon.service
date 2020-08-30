@@ -6,8 +6,13 @@ After=rc.local.service
 Type=simple
 User=cec
 Group=cec
-ExecStart=/usr/bin/libcec-daemon --port 2
+ExecStart=/usr/bin/libcec-daemon --port 1
 Restart=always
+#StandardOutput=syslog
+#StandardError=syslog
+#SyslogIdentifier=libcec-daemon
+
+
 
 [Install]
 WantedBy=multi-user.target

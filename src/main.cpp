@@ -89,6 +89,7 @@ void Main::loop(const string & device) {
 	sigemptyset(&action.sa_mask);
 
 	int restart = false;
+	running=false;
 
 	do
 	{
@@ -97,15 +98,18 @@ void Main::loop(const string & device) {
 		LOG4CPLUS_INFO(logger, "Logical Address \"" << logicalAddress << "\"");
                
 		if ( logicalAddress != CECDEVICE_UNKNOWN)
-		    running = true;
+		    
 
 		/* install signals */
 		sigaction (SIGHUP,  &action, NULL);
 		sigaction (SIGINT,  &action, NULL);
 		sigaction (SIGTERM, &action, NULL);
-
+		
+		
+		LOG4CPLUS_INFO(logger,"wait for tv is powered and makeactive");
+		cec.waitTVready();
+		running = true;
 		if (makeActive) {
-			LOG4CPLUS_INFO(logger,"wait for tv is powered and makeactive");
 			cec.makeActive();
             LOG4CPLUS_INFO(logger,"we are now the active device");
 		}
@@ -169,7 +173,7 @@ void Main::loop(const string & device) {
 				commands.pop();
 			}
 			int retriesRemaining = 3;
-			while( running && !libcec_cond.timed_wait(libcec_lock, boost::posix_time::seconds(43)) )
+			while( running && !libcec_cond.timed_wait(libcec_lock, boost::posix_time::seconds(10)) )
 			{
 				// Since libcec's CAdapterPingThread::Process() tries pinging 3 times before raising a
 				// connection lost alert, lets also make 3 attempts otherwise we'll stop running
@@ -227,8 +231,8 @@ void Main::signalHandler(int sigNum) {
 	switch( sigNum )
 	{
 		case SIGHUP:
-			Main::instance().restart();
-			break;
+			//Main::instance().restart();
+			//break;
 		default:
 			Main::instance().stop();
 			break;
@@ -438,8 +442,10 @@ int Main::onCecAlert(const CEC::libcec_alert alert, const CEC::libcec_parameter 
             LOG4CPLUS_ERROR(logger, "Main::onCecAlert(alert=CEC_ALERT_PHYSICAL_ADDRESS_ERROR)");
             break;
 		case CEC_ALERT_TV_POLL_FAILED:
+		if (running) {
             LOG4CPLUS_WARN(logger, "Main::onCecAlert(alert=CEC_ALERT_TV_POLL_FAILED)");
 			Main::instance().restart();
+}
 			break;
 		default:
             LOG4CPLUS_ERROR(logger, "Main::onCecAlert(alert=" << alert << ")");
