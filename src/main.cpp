@@ -95,9 +95,10 @@ void Main::loop(const string & device) {
 	{
 		/* Get logicalAddress after openning device */
 		logicalAddress = cec.open(device);
-		LOG4CPLUS_INFO(logger, "Logical Address \"" << logicalAddress << "\"");
                
-		if ( logicalAddress != CECDEVICE_UNKNOWN)
+		if ( logicalAddress != CECDEVICE_UNKNOWN) {
+		    LOG4CPLUS_INFO(logger, "Logical Address \"" << logicalAddress << "\"");
+        }
 		    
 
 		/* install signals */
@@ -125,9 +126,7 @@ void Main::loop(const string & device) {
 				{
 					case COMMAND_STANDBY:
 						if( ! onStandbyCommand.empty() )
-				
-
-		{
+		                {
 							LOG4CPLUS_DEBUG(logger, "Standby: Running \"" << onStandbyCommand << "\"");
 							int ret = system(onStandbyCommand.c_str());
                             if( ret )
@@ -179,6 +178,7 @@ void Main::loop(const string & device) {
 				// connection lost alert, lets also make 3 attempts otherwise we'll stop running
 				// before our alert handling gets a chance to do its job
 				bool pinged = false;
+				cec.waitTVready();
 				if( retriesRemaining > 0 && !(pinged = cec.ping()) )
 				{
 					--retriesRemaining;
@@ -444,8 +444,10 @@ int Main::onCecAlert(const CEC::libcec_alert alert, const CEC::libcec_parameter 
 		case CEC_ALERT_TV_POLL_FAILED:
 		if (running) {
             LOG4CPLUS_WARN(logger, "Main::onCecAlert(alert=CEC_ALERT_TV_POLL_FAILED)");
+            LOG4CPLUS_WARN(logger, "Assuming TV is turned off, signalize power key from tv");
+            onCecKeyPress(CEC_USER_CONTROL_CODE_POWER);
 			Main::instance().restart();
-}
+            }
 			break;
 		default:
             LOG4CPLUS_ERROR(logger, "Main::onCecAlert(alert=" << alert << ")");
